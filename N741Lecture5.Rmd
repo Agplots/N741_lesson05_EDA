@@ -13,28 +13,33 @@ editor_options:
 * `car` [which also loads the `carData` package]
 * `tidyverse` - mainly using `dplyr` and `ggplot2`
 * `janitor` _(optional)_
-* `Rcmdr` 
+* `Rcmdr` _(short demo if time)_
 * `tableone` _(optional)_
 
 ## Rmarkdown initial setup options
 
-Create an initial R chunk with `knitr` options to control what is shown or not shown in your final output. Three options are useful to set to FALSE for the final version. These 3 options can be kept as TRUE when debugging initially.
+Create an initial R chunk with `knitr` options to control what is shown or not shown in your final output. Three options are useful to set to FALSE for the final version. These options can be kept as TRUE when debugging initially.
 
 * `echo` - set to TRUE to see your R code in the final document - set to TRUE for homework
 * `warning` - set to FALSE so that warnings are hidden
 * `message` - set to FALSE to hide messages like when loading packages and such
+* `error` - set to FALSE to hide error messages in final document
 
-It is also a good idea to load the packages needed for all of the code run in this RMD (R markdown) document in this first R-code chunk.
+Learn more about `knitr` at [https://yihui.name/knitr/options/](https://yihui.name/knitr/options/). Another option to consider is `include = FALSE` which will run the code but produce no output in the document for that code chunk.
 
-```{r setup, echo = FALSE}
+NOTE: In this first code chunk, it is a good idea to load all the packages needed for all of the code run in this RMD (R markdown) document.
+
+```{r setup, echo = FALSE, message = FALSE}
 # knitr options
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(warning = FALSE)
 knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(error = FALSE)
 
 # packages needed for this RMD
 library(car)
 library(tidyverse)
+library(tableone)
 ```
 
 ## Naming R code chunks
@@ -42,6 +47,8 @@ library(tidyverse)
 It is a good practice to give your R code chunks names. That way when you are debugging, it'll be easier to figure out which section of the document or R-code chunk is failing.
 
 The R-code chunk above is called `setup`.
+
+The names of your code chunks will show up in the "Rmarkdown" TAB (next to Console) when the document is "knitted".
 
 ## Working with `Leinhardt` dataset in `carData` package
 
@@ -52,9 +59,11 @@ The `carData` package has many datasets built into it. One of these datasets is 
 * `region`
 * `oil`
 
-Load the dataset and take a look at it. We can access the dataset directly using the `View()` command and by referencing the dataset using the `package::dataset` syntax. 
+Load the dataset and take a look at it. We can access the dataset directly using the `View()` command and by referencing the dataset using the `package::dataset` syntax. In console type `View(carData::Leinhardt)`, which will open a data viewer window (usually at the top left side of the RStudio IDE).
 
 OR we can also create a new data object using the `<-` assign command and work with this copy of the dataset in memory to work from.
+
+_Creating a copy of the dataset is usually a good idea to be sure you don't overwrite the original data source._
 
 ```{r loadData}
 dataLeinhardt <- carData::Leinhardt
@@ -62,7 +71,7 @@ dataLeinhardt <- carData::Leinhardt
 
 ## Dataset object
 
-Look at the type of object this dataset is and the structure of the data - the types of variables in the dataset.
+Look at the type of object this dataset is (using the `class()` function) and the structure of the data (using the `str()` function) - the types of variables in the dataset.
 
 ```{r datastr}
 class(dataLeinhardt)
@@ -327,17 +336,17 @@ dataLeinhardt %>%
   geom_bar(position = "dodge")
 ```
 
-## `tableone` package
+## [OPTIONAL] `tableone` package
 
-Another good package to explore is the `tableone` package. Learn more at []().
+Another good package to explore is the `tableone` package. Learn more at [https://cran.r-project.org/web/packages/tableone/](https://cran.r-project.org/web/packages/tableone/), review the vignettes and see their Github repo [https://github.com/kaz-yos/tableone](https://github.com/kaz-yos/tableone).
 
 We can get a summary table of the overall statistics using the `tableone::CreateTableOne(data = xxxx)` function.
 
 ### Summary Stats Table Overall
 
 ```{r tableoneCreate}
-# load tableone package
-library(tableone)
+# load tableone package - done in 1st code chunk above
+# library(tableone)
 
 # simple summary stats
 tableone::CreateTableOne(data = dataLeinhardt)
@@ -345,7 +354,7 @@ tableone::CreateTableOne(data = dataLeinhardt)
 
 ### Another summary
 
-```{r}
+```{r tableoneSummary}
 # save the tableone output object
 tab1 <- tableone::CreateTableOne(data = dataLeinhardt)
 
@@ -360,7 +369,7 @@ summary(tab1)
 
 ### Make a nicer table
 
-```{r}
+```{r tableoneKable}
 ptab1 <- print(tab1)
 knitr::kable(ptab1)
 ```
@@ -376,13 +385,12 @@ tab2
 
 ### Nicer table by group with stat tests
 
-```{r}
+```{r tableoneGrouptests}
 ptab2 <- print(tab2)
 class(ptab2)
 
 knitr::kable(ptab2)
 ```
-
 
 ## Other things to try
 
